@@ -1,0 +1,19 @@
+#使用centos镜像
+#作者：kinghu
+
+FROM centos
+
+MAINTAINER KINGHU88 517834203@qq.com
+
+RUN touch /etc/yum.repos.d/nginx.repo
+RUN cat > /etc/yum.repos.d/nginx.repo <<EOF
+	[nginx] 
+	name=nginx repo 
+	baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
+	gpgcheck=0 
+	enabled=1
+EOF
+RUN yum -y install nginx
+
+EXPOSE 80
+CMD /usr/sbin/nginx
