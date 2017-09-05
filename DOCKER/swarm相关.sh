@@ -38,7 +38,8 @@ docker node update --availability drain jenkins-swarm
 
 #设置node的标签，标签名为：foo，类似于别名概念
 docker node update --label-add foo docker-node1
-
+#类似于归类的概念
+docker node update --label-add type=queue docker-node1 
 #新创建overlay网络，名为：nginx_network
 docker network create --driver overlay nginx_network
 dcoker network ls
