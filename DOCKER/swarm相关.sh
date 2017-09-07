@@ -52,9 +52,9 @@ dcoker network ls
 		e325d34ce8cf        none                null                local
 
 	
-docker service create --detach=false --env MYVAR=foo --replicas 1 --network nginx_network --name web-nginx -p 8080:80 nginx:latest
+docker service create --detach=false --constraint 'node.labels.type==Web' --replicas 2 --network nginx_network --name web-nginx -p 8080:80 nginx:latest
 --detach=false	：默认添加
---env MYVAR=foo	：选择特定node便签来调度
+--constraint 'node.labels.type==Web' ：选择特定node便签来调度
 --replicas 1	：设置调度的任务量，启动几个容器
 --network nginx_network	：设置网络环境
 --name web-nginx	：设置容器名
@@ -64,3 +64,8 @@ nginx:latest	：选择启动的docker镜像
 docker service ps <容器名>
 
 
+node.id	节点ID	node.id == 2ivku8v2gvtg4
+node.hostname	节点主机名	node.hostname！= node-2
+node.role	节点角色	node.role == manager
+node.labels	用户定义的节点标签	node.labels.security == high
+engine.labels	Docker Engine的标签	engine.labels.operatingsystem == ubuntu 14.04
