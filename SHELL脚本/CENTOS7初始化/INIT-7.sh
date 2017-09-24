@@ -42,7 +42,7 @@ function Renamed_Network_card(){
 		do
 			sed -i 's/NAME=${i}/NAME=eth${n}/' ifcfg-${i}
 			mv ifcfg-${i} ifcfg-eth${n}
-			n=n+1
+			((n=n+1))
 		done
 		sed -i 's/rhgb/net.ifnames=0 biosdevname=0 rhgb/' /etc/default/grub
 		/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg	
