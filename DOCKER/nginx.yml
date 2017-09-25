@@ -1,0 +1,25 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:latest
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+      #限制条件，通过条件指定那些节点，参与调度
+      placement:
+        #指定非manager参与调度
+        #constraints: [node.role != manager]
+        #指定标签类，参与调度
+        constraints: [node.labels.type == Web]
+    ports:
+      - "80:80"
+    #network会自己创建一个overlay的网络，network就是创建的名称，通过docker network ls查看
+    networks:
+      - network
+networks:
+  network:

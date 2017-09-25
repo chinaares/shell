@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+
+  mysqldb:
+    image: mysql:latest
+    volumes:
+      - "/root/MYSQLDB:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: wp
+      MYSQL_USER: kinghu
+      MYSQL_PASSWORD: 123456
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - "10.10.10.101:3307:3306"
+    networks:
+      - overlay
+
+  wordpress:
+    depends_on:
+      - mysqldb
+    image: wordpress:latest
+    volumes:
+      - "/root/WORDPRESS/:/var/www/html/"
+    environment:
+      WORDPRESS_DB_HOST: mysqldb:3306
+      WORDPRESS_DB_PASSWORD: 123456
+    ports:
+      - "8080:80"
+    deploy:
+      replicas: 2
+      placement:
+        constraints: [node.labels.type == Web]
+      restart_policy:
+        condition: on-failure
+    networks:
+      - overlay
+      
+networks:
+  overlay:

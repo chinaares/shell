@@ -1,0 +1,21 @@
+version: "3"
+services:
+  mysqldb:
+    image: mysql:latest
+    volumes:
+      - "/root/MYSQLDB:/var/lib/mysql"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - "3307:3306"
+    networks:
+      - overlay
+networks:
+  overlay:
+
+#docker run --name cmh-mysql -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql:latest
+
