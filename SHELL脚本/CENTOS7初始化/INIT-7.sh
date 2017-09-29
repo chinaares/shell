@@ -8,7 +8,7 @@ function init(){
 	systemctl disable firewalld.service
 	systemctl status firewalld.service
 	###############################
-	yum -y install wget epel-release
+	yum -y install wget epel-release dos2unix
 	cd /etc/yum.repos.d/
 	mv CentOS-Base.repo CentOS-Base.repo.`date +%Y%m%d_%S`bak
 	wget -O CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
@@ -40,7 +40,7 @@ function Renamed_Network_card(){
 		n=0
 		for i in $name;
 		do
-			sed -i 's/NAME=${i}/NAME=eth${n}/' ifcfg-${i}
+			sed -i "s/${i}/eth${n}/g" ifcfg-${i}
 			mv ifcfg-${i} ifcfg-eth${n}
 			((n=n+1))
 		done
