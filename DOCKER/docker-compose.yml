@@ -1,0 +1,11 @@
+version: "3"
+services:
+  nginx:
+    hostname: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./wwwroot:/usr/local/nginx/html

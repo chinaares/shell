@@ -387,87 +387,82 @@ else
 printf "%1s \033[1;32m Mysql problems！！ \033[0m \n"
 fi
 }
+
 function Php_install()
 {   #Php 安装
- for i in `seq -w 5 -1 1`
-   do
-     echo -ne "!";
-     sleep 1;
-   done
- echo
-printf "%1s \033[1;32m PHP 安装开始... \033[0m \n"
-#-----------------------------libmcrypt package-----------------------
-cd /app
-#wget ftp://mcrypt.hellug.gr/pub/crypto/mcrypt/libmcrypt/${LibmCrypt}.tar.gz
-tar -zxvf ${LibmCrypt}.tar.gz -C /usr/src/
-cd /usr/src/${LibmCrypt}
-./configure --prefix=/usr/local/
-make && make install
-if [ $? != 0 ]
-then
-printf "%1s \033[1;32m Libmcrypt is complete！！ \033[0m \n"
-exit 1
-else
-printf "%1s \033[1;32m Libmcrypt problems！！ \033[0m \n"
-fi
-#-----------------------------libmcrypt package-----------------------
-for i in `seq -w 5 -1 1`
-   do
-     echo -ne "!";
-     sleep 1;
-   done
- echo
-echo "/usr/local/lib" >> /etc/ld.so.conf
-/sbin/ldconfig
-if [ $? != 0 ]
-then
-printf "%1s \033[1;32m /usr/local/lib Write failed！！ \033[0m \n"
-exit 1
-else
-printf "%1s \033[1;32m /usr/local/lib Write to successful！！ \033[0m \n"
-fi
 
-printf "%1s \033[1;32m Php starting... \033[0m \n"
-yum install -y gmp-devel libmcrypt-devel libxslt-devel openssl-devel zlib-devel libxml2-devel libjpeg-turbo-devel libiconv-devel freetype-devel libpng-devel gd-devel libcurl-devel
-cd /app
-#wget http://cn2.php.net/distributions/${PHP}.tar.gz
-tar zxf $Llibiconv_path.tar.gz -C /usr/src/
-cd /usr/src/$Llibiconv_path
+#################################一、libmcrypt package#################################
+printf "%1s \033[1;32m libmcrypt安装... \033[0m \n"
+#wget ftp://mcrypt.hellug.gr/pub/crypto/mcrypt/libmcrypt/${LibmCrypt}.tar.gz
+cd /app && tar -zxvf ${LibmCrypt}.tar.gz -C /usr/src/ && cd /usr/src/${LibmCrypt}
+./configure --prefix=/usr/local/ && make -j 4 && make install
+if [ $? != 0 ]
+then
+    printf "%1s \033[1;32m Libmcrypt安装失败！！ \033[0m \n"
+    exit 1
+else
+    printf "%1s \033[1;32m Libmcrypt安装成功！！ \033[0m \n"
+    echo "/usr/local/lib" >> /etc/ld.so.conf && /sbin/ldconfig
+fi
+#################################libmcrypt package#################################
+
+#################################二、Llibiconv package#################################
+printf "%1s \033[1;32m Llibiconv安装... \033[0m \n"
+cd /app && tar zxf ${Llibiconv_path}.tar.gz -C /usr/src/ && cd /usr/src/${Llibiconv_path}
 ./configure --prefix=/usr/local/libiconv
 if [ $? != 0 ]
 then
-printf "%1s \033[1;32m /usr/local/libiconv Write failed！！ \033[0m \n"
-exit 1
+    printf "%1s \033[1;32m libiconv 编译失败！ \033[0m \n"
+    exit 1
 else
-printf "%1s \033[1;32m /usr/local/libiconv Write to successful！！ \033[0m \n"
+    printf "%1s \033[1;32m libiconv 编译成功！！ \033[0m \n"
+    make -j 4 && make install
 fi
-make && make install
-cd /app
-tar -xzf ${PHP}.tar.gz -C /usr/src/
-cd /usr/src/${PHP}
-./configure --prefix=/usr/local/php --with-iconv-dir=/usr/local/libiconv --with-jpeg-dir=/usr/lib64 --with-png-dir=/usr/lib64 --with-freetype-dir  --with-zlib  --with-libxml-dir --with-mcrypt --with-gd --with-curl --with-gmp --with-gettext --with-mhash --with-openssl  --with-xmlrpc --with-pear --with-zend-vm=CALL --enable-zend-multibyte --enable-bcmath --enable-gd-native-ttf --enable-xml --enable-fpm  --enable-embedded-mysqli --enable-mbstring --enable-inline-optimization --enable-sockets --enable-zip --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-soap --enable-ftp --disable-debug --disable-ipv6 --with-mysql --with-mysqli
-make && make install
+#################################Llibiconv package#################################
+
+#################################三、PHP7 package#################################
+printf "%1s \033[1;32m PHP7安装开始... \033[0m \n"
+yum install -y gmp-devel libmcrypt-devel libxslt-devel \
+openssl-devel zlib-devel libxml2-devel \
+libjpeg-devel  freetype-devel libpng-devel \
+gd-devel libcurl-devel 
+
+cd /app && tar -xzf ${PHP}.tar.gz -C /usr/src/ && cd /usr/src/${PHP}
+./configure --prefix=/usr/local/php --with-iconv-dir=/usr/local/libiconv \
+--with-jpeg-dir --with-png-dir --with-freetype-dir  \
+--with-zlib  --with-libxml-dir --with-mcrypt --with-gd \
+--with-curl --with-gmp --with-gettext --with-mhash \
+--with-openssl  --with-xmlrpc --with-pear  --enable-bcmath \
+--enable-gd-native-ttf --enable-xml --enable-fpm  \
+--enable-embedded-mysqli --enable-mbstring \
+--enable-inline-optimization --enable-sockets \
+--enable-zip --enable-sysvmsg --enable-sysvsem \
+--enable-sysvshm --enable-soap --enable-ftp \
+--disable-debug --disable-ipv6 \
+--with-mysql --with-mysqli
 if [ $? != 0 ]
 then
-printf "%1s \033[1;32m PHP installation failed！！ \033[0m \n"
-exit 1
+    printf "%1s \033[1;32m PHP编译失败！！ \033[0m \n"
+    exit 1
 else
-printf "%1s \033[1;32m PHP installation successful！！ \033[0m \n"
+    printf "%1s \033[1;32m PHP编译成功！！ \033[0m \n"
+    make -j 4 && make install
 fi
-cd /usr/src/${PHP}
-cp -r php.ini-development /usr/local/php/lib/php.ini
-chown -R www.www /usr/local/php
+
+cd /usr/src/${PHP} && cp -r php.ini-development /usr/local/php/lib/php.ini && chown -R www.www /usr/local/php
 cp -r /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf 
 #set 【;listen.owner = nobody】【;listen.group = nobody】为 【listen.owner = www】【listen.group = www】
 sed -i '/user = nobody/c user = www' /usr/local/php/etc/php-fpm.conf
 sed -i '/group = nobody/c group = www' /usr/local/php/etc/php-fpm.conf
 sed -i '/;listen.group = nobody/a listen.group = www\nlisten.owner = www' /usr/local/php/etc/php-fpm.conf
-#------------------------------------------------------------------------
 #set 【;date.timezone =】 to 【date.timezone = Asia/Shanghai  or  PRC 】
 sed -i '/;date.timezone =/a date.timezone = Asia/Shanghai' /usr/local/php/lib/php.ini
 #------------------------------------------------------------------------
 echo "/usr/local/php/sbin/php-fpm" >> /etc/rc.d/rc.local
+#################################PHP7 package#################################
 }
+
+
 function phpinstall()
 {   #Php 安装  编译不含mysql
  for i in `seq -w 5 -1 1`
