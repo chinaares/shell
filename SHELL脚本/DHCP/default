@@ -1,0 +1,12 @@
+default menu.c32                                                            
+timeout 60
+menu title PXE CentOS Linux 7 Install Menu
+
+label linux-mini
+  menu label ^Auto-install CentOS Linux 7 Mini
+  menu default
+  kernel vmlinuz
+  append initrd=initrd.img inst.stage2=http://10.10.10.107/centos7 inst.ks=http://10.10.10.107/ks/ks.cfg quiet
+label local
+  menu label Boot from ^local drive
+  localboot 0xffff
