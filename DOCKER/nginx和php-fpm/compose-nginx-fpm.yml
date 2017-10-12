@@ -1,0 +1,32 @@
+version: "3"
+services:
+  nginx:
+    hostname: nginx
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    links:
+      - php:php-cgi
+    volumes:
+      - ./wwwroot:/usr/share/nginx/html
+      - ./conf:/etc/nginx/conf.d
+  php:
+    hostname: php
+    image: php:7.0-fpm
+    links:
+      - mysql:mysql-db
+    volumes:
+      - ./wwwroot:/var/www/html
+  # mysql:
+  #   hostname: mysql
+  #   image: mysql:5.7
+  #   ports: 
+  #     - "3306:3306"
+  #   volumes:
+  #     - ./mysql/data:/var/lib/mysql
+  #     - ./mysql/conf:/etc/mysql/conf.d
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: 123456
+  #     MYSQL_USER: king
+  #     MYSQL_PASSWORD: king
+  #     MYSQL_DATABASE: king_db

@@ -1,8 +1,8 @@
 FROM centos:7
 MAINTAINER KINGHU88 517834203@qq.com
 RUN cd /etc/yum.repos.d/ && mv CentOS-Base.repo CentOS-Base.repo.bak
-ADD epel-7.repo  /etc/yum.repos.d/
-ADD Centos-7.repo /etc/yum.repos.d/
+COPY CentOS-Base.repo  /etc/yum.repos.d/
+COPY epel.repo /etc/yum.repos.d/
 RUN yum clean all && yum makecache
 RUN yum -y install epel-release gmp-devel libmcrypt-devel libxslt-devel openssl-devel zlib-devel libxml2-devel libjpeg-devel  freetype-devel libpng-devel gd-devel libcurl-devel gcc gcc-c++ make cmake mhash mcrypt
 #https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz
