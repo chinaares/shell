@@ -152,6 +152,13 @@ EOF
 	echo "时间同步成功！"
 }
 
+function kernel_update(){
+	rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+	rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+	yum --enablerepo=elrepo-kernel install  kernel-ml-devel kernel-ml
+	grub2-set-default 0  
+}
+
 function optimized(){
 	cat << EOF
 	+-------------------------------------------------+
@@ -182,7 +189,8 @@ EOF
 	selinux_config
 	sleep 5
 	ipv6_config
-	#sleep 5
+	sleep 5
+	kernel_update
 	#Renamed_Network_card
 	sleep 5
 	optimized
