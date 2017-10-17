@@ -155,8 +155,11 @@ EOF
 function kernel_update(){
 	rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 	rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
-	yum --enablerepo=elrepo-kernel install  kernel-ml-devel kernel-ml
-	grub2-set-default 0  
+	#rpm -Uvh http://www.elrepo.org/elrepo-release-6-8.el6.elrepo.noarch.rpm #6.8
+	yum -y --enablerepo=elrepo-kernel install  kernel-ml-devel kernel-ml
+	#grep 'title' /etc/grub.conf |awk '{print $3}' #6.8
+	#sed -i 's/default=1/default=0/' /etc/grub.conf
+	grub2-set-default 0
 }
 
 function optimized(){
