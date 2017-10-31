@@ -3,7 +3,7 @@
 wget https://dl.influxdata.com/influxdb/releases/influxdb-1.3.6.x86_64.rpm
 sudo yum localinstall influxdb-1.3.6.x86_64.rpm
 
-curl -i -XPOST 'http://10.10.10.104:8086/query?db=mydb' --data-urlencode "q=SELECT * FROM cpu ORDER BY time DESC LIMIT 3"
+curl -i -XPOST 'http://10.10.10.103:8086/query?db=mydb' --data-urlencode "q=SELECT * FROM cpu ORDER BY time DESC LIMIT 3"
 
 
 show measurements

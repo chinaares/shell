@@ -1,5 +1,17 @@
 wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-4.5.2-1.x86_64.rpm 
-sudo yum localinstall grafana-4.5.2-1.x86_64.rpm 
+sudo yum  localinstall grafana-4.5.2-1.x86_64.rpm 
+
+vim /etc/yum.repos.d/grafana.repo
+[grafana]
+name=grafana
+baseurl=https://packagecloud.io/grafana/stable/el/6/$basearch
+repo_gpgcheck=1
+enabled=1
+gpgcheck=1
+gpgkey=https://packagecloud.io/gpg.key https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+
 
 
 
@@ -33,12 +45,12 @@ SELECT derivative(mean("value"), 10s) FROM "cpu_usage_total" WHERE container_nam
  
 网络 i/o 查询：
 tx：
-SELECT derivative(mean("value"), 10s)/8 FROM "tx_bytes" WHERE container_name='cadvisor' AND $timeFilter GROUP BY time($interval), container_name fill(previous)
+SELECT derivative(mean("value"), 10s) FROM "tx_bytes" WHERE container_name='cadvisor' AND $timeFilter GROUP BY time($interval), container_name fill(previous)
 
 AND time >= '1508142041734726174' AND time <= '1508142042766035620'
 
 rx：
-SELECT derivative(mean("value"), 10s)/8 FROM "rx_bytes" WHERE container_name='cadvisor' AND $timeFilter GROUP BY time($interval), container_name fill(previous)
+SELECT derivative(mean("value"), 10s) FROM "rx_bytes" WHERE container_name='cadvisor' AND $timeFilter GROUP BY time($interval), container_name fill(previous)
  
 文件系统使用及limit：
 fs
