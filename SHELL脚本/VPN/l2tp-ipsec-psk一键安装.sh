@@ -136,7 +136,7 @@ function iptables_set(){
 }
 if [[ `whoami` = "root" && `cat /etc/redhat-release | awk -F "release" '{print $2}' |awk -F "." '{print $1}' |sed 's/ //g'` = "7" && `uname -i` = "x86_64" ]];then
     NAME=$1 && PASS=$2
-    if [[ "$1" = "" ]];then 
+    if [[ "$2" = "" ]];then 
         echo 'example:sh vpn.sh username password '
         exit 1
     else
