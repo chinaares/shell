@@ -10,7 +10,7 @@ iprange=192.168.1.0/24
 /sbin/tc class add dev $1 parent 2:1 classid 2:10 htb rate $down
 /sbin/tc class add dev $1 parent 2:2 classid 2:11 htb rate 1024kbps
 /sbin/tc qdisc add dev $1 parent 2:10 handle 1: sfq perturb 1
-/sbin/tc filter add  dev $1 protocol ip parent 2:0  u32 match ip dst 192.168.1.0/24  flowid 2:10
+/sbin/tc filter add  dev $1 protocol ip parent 2:0  u32 match ip dst $iprange  flowid 2:10
 #upload
 /sbin/tc qdisc add dev $1 handle ffff: ingress
 /sbin/tc filter add dev $1 parent ffff: protocol ip  u32 match ip dst \
