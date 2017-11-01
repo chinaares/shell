@@ -176,10 +176,10 @@ EOF
 }
 
 
-if [[ `whoami` = "root" && `cat /etc/redhat-release | awk -F "release" '{print $2}' |awk -F "." '{print $1}' |sed 's/ //g'` = "7" && `uname -i` = "x86_64" ]];then
+if [ -f /etc/redhat-release ] && [ -n "`grep ' 7\.' /etc/redhat-release`" ] && [ $(id -u) = "0" ];then
 	cat << EOF
 	+---------------------------------------+
-	|   Your system is CentOS 7 x86_64      |
+	|         Your system is CentOS 7       |
 	|           start optimizing            |
 	+---------------------------------------+
 EOF

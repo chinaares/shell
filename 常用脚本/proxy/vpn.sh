@@ -33,7 +33,7 @@ VPN_LOCAL="10.10.10.103"
 VPN_REMOTE="10.10.10.110-200"
 clear
 
-if [ -f /etc/redhat-release -a -n "`grep ' 7\.' /etc/redhat-release`" ];then
+if [[ -f /etc/redhat-release && -n "`grep ' 7\.' /etc/redhat-release`" ]];then
         #CentOS_REL=7
 	if [ ! -e /etc/yum.repos.d/epel.repo ];then
 		cat > /etc/yum.repos.d/epel.repo << EOF
@@ -82,15 +82,13 @@ LEN=$(echo ${#PASS})
 
 if [ -z "$PASS" ] || [ $LEN -lt 8 ] || [ -z "$NAME"]
 then
-   P1=`cat /dev/urandom | tr -cd abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789 | head -c 3`
-   P2=`cat /dev/urandom | tr -cd abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789 | head -c 3`
-   P3=`cat /dev/urandom | tr -cd abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789 | head -c 3`
-   PASS="$P1-$P2-$P3"
+   
+   PASS=$(echo $RANDOM`openssl rand -base64 16` | md5sum | cut -c 8-16)
 fi
 
 if [ -z "$NAME" ]
 then
-   NAME="vpn"
+   NAME="myvpn"
 fi
 
 cat >> /etc/ppp/chap-secrets <<END
@@ -98,10 +96,14 @@ $NAME pptpd $PASS *
 END
 
 ETH=`route | grep default | awk '{print $NF}'`
-[ -z "`grep '1723 -j ACCEPT' /etc/sysconfig/iptables`" ] && iptables -I INPUT 4 -p tcp -m state --state NEW -m tcp --dport 1723 -j ACCEPT
-[ -z "`grep 'gre -j ACCEPT' /etc/sysconfig/iptables`" ] && iptables -I INPUT 5 -p gre -j ACCEPT 
+[ -z "`grep '1723 -j ACCEPT' /etc/sysconfig/iptables`" ] && iptables -I INPUT  -p tcp -m state --state NEW -m tcp --dport 1723 -j ACCEPT
+[ -z "`grep 'gre -j ACCEPT' /etc/sysconfig/iptables`" ] && iptables -I INPUT  -p gre -j ACCEPT 
 iptables -t nat -A POSTROUTING -o $ETH -j MASQUERADE
 iptables -I FORWARD -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1356
+#限速150k
+iptables -A FORWARD -m limit -d 10.10.10.110 --limit 500/sec --limit-burst -j ACCEPT
+iptables -A FORWARD -d 10.10.10.110 -j DROP
+
 service iptables save
 sed -i 's@^-A INPUT -j REJECT --reject-with icmp-host-prohibited@#-A INPUT -j REJECT --reject-with icmp-host-prohibited@' /etc/sysconfig/iptables 
 sed -i 's@^-A FORWARD -j REJECT --reject-with icmp-host-prohibited@#-A FORWARD -j REJECT --reject-with icmp-host-prohibited@' /etc/sysconfig/iptables 
