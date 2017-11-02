@@ -160,10 +160,10 @@ function iptables_set(){
 
 }
 if [ -f /etc/redhat-release ] && [ -n "`grep ' 7\.' /etc/redhat-release`" ] && [ $(id -u) = "0" ];then
-    IP=192.168.199.190
-    IPRANGE=10.10.10.0/24
-    IPRANGE2=10.10.10.128-10.10.10.200
-    LOCALIP=10.10.10.2
+    IP=`ip a | grep inet | grep -v inet6 | grep -v 127 | sed 's/^[ \t]*//g' | cut -d ' ' -f2|awk -F / '{print $1}'`
+    IPRANGE=172.16.16.0/24
+    IPRANGE2=172.16.16.128-172.16.16.200
+    LOCALIP=172.16.16.2
     ETH=`route | grep default | awk '{print $NF}'`
     NAME=$1 && PASS=$2
     LEN=$(echo ${#PASS})
