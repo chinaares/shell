@@ -56,32 +56,60 @@ net.ipv4.conf.default.accept_source_route = 0
 EOF
 sysctl -p
 ipsec setup start
-ipsec verify
 systemctl start ipsec
 systemctl enable ipsec
 
 #修改xl2tpd主配置文件
+
+#sed -i 's/; ipsec saref = yes/ipsec saref = yes/' /etc/xl2tpd/xl2tpd.conf
+cp -rf /etc/xl2tpd/xl2tpd.conf /etc/xl2tpd/xl2tpd.conf.`date +%Y%m%d_%S`bak
 cat > /etc/xl2tpd/xl2tpd.conf  <<EOF
+;
+; This is a minimal sample xl2tpd configuration file for use
+; with L2TP over IPsec.
+;
+; The idea is to provide an L2TP daemon to which remote Windows L2TP/IPsec
+; clients connect. In this example, the internal (protected) network 
+; is 192.168.1.0/24.  A special IP range within this network is reserved
+; for the remote clients: 192.168.1.128/25
+; (i.e. 192.168.1.128 ... 192.168.1.254)
+;
+; The listen-addr parameter can be used if you want to bind the L2TP daemon
+; to a specific IP address instead of to all interfaces. For instance,
+; you could bind it to the interface of the internal LAN (e.g. 192.168.1.98
+; in the example below). Yet another IP address (local ip, e.g. 192.168.1.99)
+; will be used by xl2tpd as its address on pppX interfaces.
+
 [global]
-listen-addr = $IP
-#本机外网网卡IP
-ipsec saref = yes
+  listen-addr = $IP
+;
+; requires openswan-2.5.18 or higher - Also does not yet work in combination
+; with kernel mode l2tp as present in linux 2.6.23+
+  ipsec saref = yes
+; Use refinfo of 22 if using an SAref kernel patch based on openswan 2.6.35 or
+;  when using any of the SAref kernel patches for kernels up to 2.6.35.
+; saref refinfo = 30
+;
+; force userspace = yes
+;
+; debug tunnel = yes
+
 [lns default]
-ip range = $IPRANGE2
-local ip = $LOCALIP
-require chap = yes
-refuse pap = yes
-require authentication = yes
-name = xl2tp-VPN
-ppp debug = yes
-pppoptfile = /etc/ppp/options.xl2tpd
-length bit = yes
+  ip range = $IPRANGE2
+  local ip = $LOCALIP
+  require chap = yes
+  refuse pap = yes
+  require authentication = yes
+  name = LinuxVPNserver
+  ppp debug = yes
+  pppoptfile = /etc/ppp/options.xl2tpd
+  length bit = yes
 EOF
 #修改xl2tpd配置文件的DNS：
 sed -i 's/ms-dns  8.8.8.8/ms-dns  61.139.2.69/' /etc/ppp/options.xl2tpd
 #添加用户名
 cat >> /etc/ppp/chap-secrets <<END
-$NAME   *   $PASS    *
+$NAME * $PASS *
 END
 systemctl start xl2tpd
 systemctl enable xl2tpd
@@ -140,12 +168,14 @@ if [ -f /etc/redhat-release ] && [ -n "`grep ' 7\.' /etc/redhat-release`" ] && [
     NAME=$1 && PASS=$2
     LEN=$(echo ${#PASS})
     if [ -z "$PASS" ] || [ $LEN -lt 8 ] || [ -z "$NAME" ];then
-       
        echo '密码小于8位'
        exit 1
     else
         vpn_install
         iptables_set
+        ipsec verify && lsof -i:1701
+        echo 'VPN帐号：' $NAME && echo 'VPN密码：' $PASS
+
     fi
 elif [ -f /etc/redhat-release ] && [ -n "`grep ' 6\.' /etc/redhat-release`" ] && [ $(id -u) = "0" ];then
     echo "centos6可能不兼容，请使用centos7！"

@@ -1,0 +1,20 @@
+conn L2TP-PSK-NAT
+    rightsubnet=vhost:%priv
+    also=L2TP-PSK-noNAT
+conn L2TP-PSK-noNAT
+    authby=secret
+    pfs=no
+    auto=add
+    keyingtries=3
+    dpddelay=30
+    dpdtimeout=120
+    dpdaction=clear
+    rekey=no
+    ikelifetime=8h
+    keylife=1h
+    type=transport
+    left=120.86.124.5
+    #120.86.124.5 是自己的外网网卡Ip地址
+    leftprotoport=17/1701
+    right=%any
+    rightprotoport=17/%any
