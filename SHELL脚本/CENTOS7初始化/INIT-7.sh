@@ -149,6 +149,8 @@ EOF
 
 	ntpdate asia.pool.ntp.org >/dev/null 2>&1
 	/sbin/hwclock --systohc
+	echo '*/30 * * * * * root ntpdate asia.pool.ntp.org >/dev/null 2>&1' >> /etc/crontab
+	service crond restart
 	echo "时间同步成功！"
 }
 
