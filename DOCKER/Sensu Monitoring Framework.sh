@@ -1,5 +1,3 @@
-
-
 Scout和Datadog提供集中监控和报警系统，然而他们都是被托管的服务，大规模部署的话成本会很突出。
 
 如果你需要一个自托管、集中指标的服务，你可以考虑sensu open source monitoring framework。

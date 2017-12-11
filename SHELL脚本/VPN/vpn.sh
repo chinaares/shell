@@ -29,8 +29,8 @@ clear
 [ ! -e '/usr/bin/curl' ] && yum -y install curl
 
 VPN_IP=`curl ipv4.icanhazip.com`
-VPN_LOCAL="192.168.199.172"
-VPN_REMOTE="192.168.199.200-210"
+VPN_LOCAL="10.1.10.128"
+VPN_REMOTE="10.1.10.200-210"
 clear
 
 if [ -f /etc/redhat-release -a -n "`grep ' 7\.' /etc/redhat-release`" ];then

@@ -1,0 +1,37 @@
+docker service create --detach=false --mount type=volume,src=/wwwroot,dst=/etc/nginx/html --replicas 3 --network web --name web-nginx -p 8089:80 192.168.199.200:5000/nginx:v1.13
+
+
+###################################################zabbix搭建
+docker run \
+    -d \
+    --name zabbix-db \
+    -v /backups:/backups \
+    -v /etc/localtime:/etc/localtime:ro \
+    --env="MARIADB_USER=zabbix" \
+    --env="MARIADB_PASS=123456" \
+    monitoringartist/zabbix-db-mariadb
+
+docker run \
+        -d \
+        --name zabbix \
+        -p 8080:80 \
+        -p 10051:10051 \
+        -v /etc/localtime:/etc/localtime:ro \
+        --link zabbix-db:zabbix.db \
+        --env="ZS_DBHost=zabbix.db" \
+        --env="ZS_DBUser=zabbix" \
+        --env="ZS_DBPassword=123456" \
+        monitoringartist/zabbix-3.0-xxl
+
+
+####################################################
+
+
+
+
+#####################搭建私有仓库和WEB界面
+docker pull registry
+docker pull hyper/docker-registry-web
+docker run -d -p 5000:5000 --restart always --name registry-srv -v /opt/data/registry:/var/lib/registry registry:latest
+
+docker run -d -p 8080:8080 --name registry-web --link registry-srv -e REGISTRY_URL=http://registry-srv:5000/v2 -e REGISTRY_NAME=localhost:5000 hyper/docker-registry-web
