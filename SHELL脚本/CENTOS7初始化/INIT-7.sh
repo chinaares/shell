@@ -195,7 +195,7 @@ EOF
 	sleep 5
 	ipv6_config
 	sleep 5
-	kernel_update
+	#kernel_update
 	#Renamed_Network_card
 	sleep 5
 	optimized
