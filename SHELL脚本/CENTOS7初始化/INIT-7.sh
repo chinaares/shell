@@ -21,7 +21,7 @@ function init(){
 	###############################
 	systemctl start iptables  
 	systemctl status iptables 
-	systemctl enable iptables 
+	#systemctl enable iptables 
 	###############################
 	vimrc_ts=`grep 'set ts=4' /etc/vimrc`
 	if [ ! -n "${vimrc_ts}" ];then

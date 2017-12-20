@@ -1,0 +1,4 @@
+#使用私有仓库是要添加"insecure-registries": ["192.168.199.200:5000"]
+{
+  "registry-mirrors": ["https://u7kioyhx.mirror.aliyuncs.com"] , "insecure-registries": ["192.168.199.200:5000"]
+}

@@ -1,10 +1,11 @@
 #1.下载mysql的repo源
 mkdir /app && cd /app
-wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+#wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+wget https://repo.mysql.com//mysql57-community-release-el7-11.noarch.rpm
 
-#2.安装mysql-community-release-el7-5.noarch.rpm包
+#2.安装mysql57-community-release-el7-11.noarch.rpm包
 
-rpm -ivh mysql-community-release-el7-5.noarch.rpm
+rpm -ivh mysql57-community-release-el7-11.noarch.rpm
 #安装这个包后，会获得两个mysql的yum repo源：/etc/yum.repos.d/mysql-community.repo，/etc/yum.repos.d/mysql-community-source.repo。
 
 #3.安装mysql

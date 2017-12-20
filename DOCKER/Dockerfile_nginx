@@ -1,7 +1,7 @@
 #使用centos镜像
 #作者：kinghu
 
-FROM centos
+FROM centos:centos7
 
 MAINTAINER KINGHU88 517834203@qq.com
 
