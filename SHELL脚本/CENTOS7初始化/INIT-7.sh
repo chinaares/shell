@@ -1,7 +1,6 @@
 #!/bin/bash
 #CENTOS7初始化设置
 
-
 function init(){
 	###############################
 	systemctl stop firewalld.service  
@@ -19,8 +18,8 @@ function init(){
 	yum -y install vim npdate lrzsz iptables-services iptables unzip lsof net-tools gcc make cmake curl-devel bzip2 bzip2-devel libtool glibc gd gd-devel python-devel
 	yum -y update
 	###############################
-	systemctl start iptables  
-	systemctl status iptables 
+	#systemctl start iptables  
+	#systemctl status iptables 
 	#systemctl enable iptables 
 	###############################
 	vimrc_ts=`grep 'set ts=4' /etc/vimrc`
@@ -32,27 +31,6 @@ function init(){
 	fi
 	chmod 777 /etc/rc.d/rc.local
 }
-# function Renamed_Network_card(){
-# 	net_file=/etc/sysconfig/network-scripts/ifcfg-eth*
-# 	if [ ! -f ${net_file} ];then
-# 		name=`ip a |awk -F : '{print $2}'|sed 's/ //g'|grep ens*`
-# 		cd /etc/sysconfig/network-scripts/
-# 		n=0
-# 		for i in $name;
-# 		do
-# 			sed -i "s/${i}/eth${n}/g" ifcfg-${i}
-# 			mv ifcfg-${i} ifcfg-eth${n}
-# 			((n=n+1))
-# 		done
-# 		sed -i 's/rhgb/net.ifnames=0 biosdevname=0 rhgb/' /etc/default/grub
-# 		/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg	
-# 		#echo "The script has been executed,and system will reboot!"
-# 		#sleep 3
-# 		#reboot
-# 	else
-# 		echo "eth0 or eth1 already exists,pass! "
-# 	fi
-# }
 
 function limits_config(){ #修改打开的文件数
 	cat > /etc/rc.d/rc.local << EOF
@@ -196,7 +174,6 @@ EOF
 	ipv6_config
 	sleep 5
 	#kernel_update
-	#Renamed_Network_card
 	sleep 5
 	optimized
 else
