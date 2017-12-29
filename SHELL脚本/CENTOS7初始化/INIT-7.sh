@@ -7,13 +7,11 @@ function init(){
 	systemctl disable firewalld.service
 	systemctl status firewalld.service
 	###############################
-	yum -y install wget epel-release dos2unix
-	cd /etc/yum.repos.d/
+	yum -y install wget epel-release dos2unix && cd /etc/yum.repos.d/
 	mv CentOS-Base.repo CentOS-Base.repo.`date +%Y%m%d_%S`bak
 	wget -O CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 	wget -O epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
-	yum clean all
-	yum makecache
+	yum clean all && yum makecache
 	###############################
 	yum -y install vim npdate lrzsz iptables-services iptables unzip lsof net-tools gcc make cmake curl-devel bzip2 bzip2-devel libtool glibc gd gd-devel python-devel
 	yum -y update
@@ -22,37 +20,20 @@ function init(){
 	#systemctl status iptables 
 	#systemctl enable iptables 
 	###############################
-	vimrc_ts=`grep 'set ts=4' /etc/vimrc`
-	if [ ! -n "${vimrc_ts}" ];then
-		sed -i '3 aset ts=4' /etc/vimrc
-		echo "VIM Set up!"
-	else
-		echo "VIM ts=4 is already exists!"
-	fi
 	chmod 777 /etc/rc.d/rc.local
 }
 
 function limits_config(){ #修改打开的文件数
-	cat > /etc/rc.d/rc.local << EOF
-	#!/bin/bash
-
-	touch /var/lock/subsys/local
-	ulimit -SHn 1024000
-EOF
-
 	sed -i "/^ulimit -SHn.*/d" /etc/rc.d/rc.local
 	echo "ulimit -SHn 1024000" >> /etc/rc.d/rc.local
-
 	sed -i "/^ulimit -s.*/d" /etc/profile
 	sed -i "/^ulimit -c.*/d" /etc/profile
 	sed -i "/^ulimit -SHn.*/d" /etc/profile
-	 
-	cat >> /etc/profile << EOF
+	cat >> /etc/profile <<-'EOF'
 	ulimit -c unlimited
 	ulimit -s unlimited
 	ulimit -SHn 1024000
-EOF
-	 
+	EOF
 	source /etc/profile
 	ulimit -a
 	cat /etc/profile | grep ulimit
@@ -61,23 +42,23 @@ EOF
 	    cp /etc/security/limits.conf /etc/security/limits.conf.bak
 	fi
 
-	cat > /etc/security/limits.conf << EOF
+	cat > /etc/security/limits.conf <<-'EOF'
 	* soft nofile 1024000
 	* hard nofile 1024000
 	* soft nproc  1024000
 	* hard nproc  1024000
 	hive   - nofile 1024000
 	hive   - nproc  1024000
-EOF
+	EOF
 
 	if [ ! -f "/etc/security/limits.d/20-nproc.conf.bak" ]; then
 	    cp /etc/security/limits.d/20-nproc.conf /etc/security/limits.d/20-nproc.conf.`date +%Y%m%d_%S`bak
 	fi
 
-	cat > /etc/security/limits.d/20-nproc.conf << EOF
+	cat > /etc/security/limits.d/20-nproc.conf <<-'EOF'
 	*          soft    nproc     409600
 	root       soft    nproc     unlimited
-EOF
+	EOF
 	sleep 1
 }
 
@@ -87,12 +68,11 @@ function selinux_config(){ #关闭SELINUX disable selinux
 	sleep 1
 }
 
-
 function ipv6_config(){ # 关闭ipv6  disable the ipv6
 	echo "NETWORKING_IPV6=no">/etc/sysconfig/network
 	echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
 	echo 1 > /proc/sys/net/ipv6/conf/default/disable_ipv6
-	echo "127.0.0.1   localhost   localhost.localdomain">/etc/hosts
+	echo "127.0.0.1   localhost   localhost.localdomain" > /etc/hosts
 	#sed -i 's/IPV6INIT=yes/IPV6INIT=no/g' /etc/sysconfig/network-scripts/ifcfg-enp0s8
 	for line in $(ls -lh /etc/sysconfig/network-scripts/ifcfg-* | awk '{print $9}')  
 	do
@@ -110,20 +90,20 @@ function time_set(){ #设置时间同步
 	rm -f /etc/localtime
 	cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-	cat > /etc/sysconfig/clock << EOF
+	cat <<-'EOF' > /etc/sysconfig/clock 
 	ZONE="Asia/Shanghai"
 	UTC=false
 	ARC=false
-EOF
+	EOF
 
-	cat > /etc/ntp.conf << EOF
+	cat <<-'EOF' > /etc/ntp.conf 
 	server 128.138.140.44 prefer
 	server 132.163.4.102
 	server ntp.fudan.edu.cn
 	server time-a.nist.gov
 	server asia.pool.ntp.org
 	driftfile /var/db/ntp.drift
-EOF
+	EOF
 
 	ntpdate asia.pool.ntp.org >/dev/null 2>&1
 	/sbin/hwclock --systohc
@@ -143,13 +123,13 @@ function kernel_update(){
 }
 
 function optimized(){
-	cat << EOF
+	cat <<-'EOF'
 	+-------------------------------------------------+
 	|               optimizer is done                 |
 	|   it is recommond to restart this server !       |
 	|             Please Reboot system                |
 	+-------------------------------------------------+
-EOF
+	EOF
 	echo "The script has been executed,and system will reboot!"
 	sleep 3
 	reboot
@@ -157,12 +137,12 @@ EOF
 
 
 if [ -f /etc/redhat-release ] && [ -n "`grep ' 7\.' /etc/redhat-release`" ] && [ $(id -u) = "0" ];then
-	cat << EOF
+	cat <<-'EOF'
 	+---------------------------------------+
 	|         Your system is CentOS 7       |
 	|           start optimizing            |
 	+---------------------------------------+
-EOF
+	EOF
 	sleep 5
 	init
 	sleep 5
