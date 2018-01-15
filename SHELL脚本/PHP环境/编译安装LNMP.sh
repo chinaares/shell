@@ -10,30 +10,28 @@ export Ngx_path=ngx_cache_purge-2.3
 export Httpd_p=httpd-2.4.17
 export Apr_p=apr-1.5.2
 export Apr_util=apr-util-1.5.4
-function showMenu()
-{   #选项界面
+function showMenu(){   #选项界面
 	clear
-	echo
-	echo "--------------------------------------------------------------"
-	echo "|      Centos6 Install Helper                                |"
-	echo "|      copyright http://www.kinghu.cc                        |"
-	echo "--------------------------------------------------------------"
-	echo "|      1. Installation package                               |"
-	echo "|      2. Useradd                                            |"
-	echo "|      3. Time set                                           |"
-	echo "|      4. Install Nginx                                      |"
-	echo "|      5. Install Mysql                                      |"
-	echo "|      6. Install php                                        |"
-	echo "|      7. Install Haproxy                                    |"
-	echo "|      8. Install Lnmp                                       |"
-	echo "|      9. Install Lamp                                       |"
-	echo "|      x. Exit                                               |"
-	echo "--------------------------------------------------------------"
-	echo
+	cat <<-'EOF'
+     "--------------------------------------------------------------"
+     "|      Centos6 Install Helper                                |"
+     "|      copyright http://www.kinghu.cc                        |"
+     "--------------------------------------------------------------"
+     "|      1. Installation package                               |"
+     "|      2. Useradd                                            |"
+     "|      3. Time set                                           |"
+     "|      4. Install Nginx                                      |"
+     "|      5. Install Mysql                                      |"
+     "|      6. Install php                                        |"
+     "|      7. Install Haproxy                                    |"
+     "|      8. Install Lnmp                                       |"
+     "|      9. Install Lamp                                       |"
+     "|      x. Exit                                               |"
+     "--------------------------------------------------------------"
+EOF
 	return 0
 }
-function selectCmd()
-{
+function selectCmd(){
 	showMenu
 	echo "Please select a serial number for installation [a-x]:"
 	read -n 1 M
@@ -92,65 +90,63 @@ function selectCmd()
 	selectCmd
 	return 0
 }
-function Environmental_package()
-{   #基础依赖包安装
-Software_package
-printf "%1s \033[1;32m Environmental_package Starting...\033[0m \n"
-#yum -y install lrzsz
-yum -y install gcc make cmake curl-devel bzip2 bzip2-devel libtool glibc
-#yum -y install pcre pcre-devel openssl openssl-devel gd gd-devel perl perl-ExtUtils-Embed
+function Environmental_package(){   #基础依赖包安装
+    Software_package
+    printf "%1s \033[1;32m Environmental_package Starting...\033[0m \n"
+    #yum -y install lrzsz
+    yum -y install gcc make cmake curl-devel bzip2 bzip2-devel libtool glibc
+    #yum -y install pcre pcre-devel openssl openssl-devel gd gd-devel perl perl-ExtUtils-Embed
 }
 function Software_package()
-{   #检测系统软件安装情况
-printf "%1s \033[1;32m ......Detection software installations\033[0m \n"
-if rpm -qa |grep mysql
-then
-yum -y remove mysql*
-else
-printf "%1s \033[1;32m ......Mysql not installed\033[0m \n"
-fi
-if rpm -qa |grep php
-then
-yum -y remove php*
-else
-printf "%1s \033[1;32m ......PHP not installed\033[0m \n"
-fi
-if rpm -qa |grep httpd
-then
-yum -y remove httpd
-else
-printf "%1s \033[1;32m ......Httpd not installed\033[0m \n"
-fi
+{   #删除系统自带的lnmp环境
+
+    if rpm -qa |grep mysql
+    then
+        yum -y remove mysql*
+    else
+        printf "%1s \033[1;32m ......Mysql not installed\033[0m \n"
+    fi
+    if rpm -qa |grep php
+    then
+        yum -y remove php*
+    else
+        printf "%1s \033[1;32m ......PHP not installed\033[0m \n"
+    fi
+    if rpm -qa |grep httpd
+    then
+        yum -y remove httpd
+    else
+        printf "%1s \033[1;32m ......Httpd not installed\033[0m \n"
+    fi
 }
 function Time_set()
 {   #设置时间同步
-rm -f /etc/localtime
-cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-cat > /etc/sysconfig/clock <<EOF
-ZONE="Asia/Shanghai"
-UTC=false
-ARC=false
+   yum -y install ntp
+    service ntpd start
+    chkconfig --level 35 ntpd on
+    rm -f /etc/localtime
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+    cat <<-'EOF' > /etc/sysconfig/clock 
+    ZONE="Asia/Shanghai"
+    UTC=false
+    ARC=false
+    EOF
+
+    cat <<-'EOF' > /etc/ntp.conf 
+    server 128.138.140.44 prefer
+    server 132.163.4.102
+    server ntp.fudan.edu.cn
+    server time-a.nist.gov
+    server asia.pool.ntp.org
+    driftfile /var/db/ntp.drift
 EOF
 
-#Modify the time synchronization configuration
-cat > /etc/ntp.conf << EOF
-server 128.138.140.44 prefer
-server 132.163.4.102
-server ntp.fudan.edu.cn
-server time-a.nist.gov
-server stdtime.gov.hk
-driftfile /var/db/ntp.drift
-EOF
-
-ntpdate stdtime.gov.hk
-/sbin/hwclock --systohc
-if [ $? != 0 ]
-then
-printf "%1s \033[1;32m Time zone changes is not successful！！ \033[0m \n"
-exit 1
-else
-printf "%1s \033[1;32m Time zone changes is successful！！ \033[0m \n"
-fi
+    ntpdate asia.pool.ntp.org >/dev/null 2>&1
+    /sbin/hwclock --systohc
+    echo '*/30 * * * *  root ntpdate asia.pool.ntp.org >/dev/null 2>&1' >> /etc/crontab
+    service crond restart
+    echo "时间同步成功！"
 }
 function User_add()
 {   #添加用户和组
@@ -283,7 +279,7 @@ chown -R www.www /usr/local/nginx
 mkdir /tmp/tcmalloc
 chmod 0777 /tmp/tcmalloc
 mv /usr/local/nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf.bak
-cat > /usr/local/nginx/conf/nginx.conf << "EOF"  #Must escape add double quotation marks, or variable will be filtered out！Example：$remote_addr
+cat > /usr/local/nginx/conf/nginx.conf <<-"EOF"
 user  www www; 
 worker_processes  2; 
 worker_rlimit_nofile 65535;  

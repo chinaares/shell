@@ -15,8 +15,8 @@
 说明：ceph-deploy工具都是通过主机名与其他节点通信。修改主机名的命令为：【hostnamectl set-hostname "新的名字"】
 
 每个节点安装依赖：
-sudo yum install -y yum-plugin-priorities
-sudo yum install *argparse* -y
+sudo yum install -y yum-plugin-priorities *argparse*
+
 sudo yum install -y yum-utils && sudo yum-config-manager --add-repo https://dl.fedoraproject.org/pub/epel/7/x86_64/ && sudo yum install --nogpgcheck -y epel-release && sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 && sudo rm /etc/yum.repos.d/dl.fedoraproject.org*
 
 第三步：
@@ -146,7 +146,7 @@ ceph-deploy --overwrite-conf osd create pxe-node4:/dev/sdb
 
 把管理节点的ceph.conf和ceph.client.admin.keyring文件发送到集群各个节点
 ceph-deploy admin pxe-node1 pxe-node2 pxe-node3 pxe-node4
-
+sudo chmod +r /etc/ceph/ceph.client.admin.keyring
 如果节点有了ceph.conf，就要用下面命令，覆盖方式发送，只发送ceph.conf！
 ceph-deploy --overwrite config push pxe-node1 pxe-node2 pxe-node3 pxe-node4
 

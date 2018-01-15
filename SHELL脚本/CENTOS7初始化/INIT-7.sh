@@ -13,8 +13,8 @@ function init(){
 	wget -O epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
 	yum clean all && yum makecache
 	###############################
-	yum -y install vim npdate lrzsz iptables-services iptables unzip lsof net-tools gcc make cmake curl-devel bzip2 bzip2-devel libtool glibc gd gd-devel python-devel
 	yum -y update
+	yum -y install vim npdate lrzsz iptables-services iptables unzip lsof net-tools gcc make cmake curl-devel bzip2 bzip2-devel libtool glibc gd gd-devel python-devel
 	###############################
 	#systemctl start iptables  
 	#systemctl status iptables 
@@ -25,14 +25,14 @@ function init(){
 
 function limits_config(){ #修改打开的文件数
 	sed -i "/^ulimit -SHn.*/d" /etc/rc.d/rc.local
-	echo "ulimit -SHn 1024000" >> /etc/rc.d/rc.local
+	echo "ulimit -SHn 10240" >> /etc/rc.d/rc.local
 	sed -i "/^ulimit -s.*/d" /etc/profile
 	sed -i "/^ulimit -c.*/d" /etc/profile
 	sed -i "/^ulimit -SHn.*/d" /etc/profile
 	cat >> /etc/profile <<-'EOF'
 	ulimit -c unlimited
 	ulimit -s unlimited
-	ulimit -SHn 1024000
+	ulimit -SHn 10240
 	EOF
 	source /etc/profile
 	ulimit -a
@@ -43,12 +43,12 @@ function limits_config(){ #修改打开的文件数
 	fi
 
 	cat > /etc/security/limits.conf <<-'EOF'
-	* soft nofile 1024000
-	* hard nofile 1024000
-	* soft nproc  1024000
-	* hard nproc  1024000
-	hive   - nofile 1024000
-	hive   - nproc  1024000
+	* soft nofile 10240
+	* hard nofile 10240
+	* soft nproc  10240
+	* hard nproc  10240
+	hive   - nofile 10240
+	hive   - nproc  10240
 	EOF
 
 	if [ ! -f "/etc/security/limits.d/20-nproc.conf.bak" ]; then
