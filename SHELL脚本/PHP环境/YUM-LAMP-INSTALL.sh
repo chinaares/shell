@@ -8,11 +8,12 @@ if [[ `whoami` = "root" && `cat /etc/redhat-release | awk -F "release" '{print $
 	rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 	#mysql的安装源
 	rpm -Uvh http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
-	yum -y install php70w php70w-mysql php70w-mbstring php70w-gd  php70w-mcrypt php70w-ldap mysql-server mysql mysql-devel
+	yum -y install php70w php70w-mysql php70w-xml php70w-bcmath php70w-mbstring php70w-gd  php70w-mcrypt php70w-ldap mysql-server mysql mysql-devel
 	chown -R root:root /var/lib/mysql
 	service mysqld restart
-	mysql -uroot mysql -e "update user set password=password('123456') where user='root'"
+	#mysql -uroot mysql -e "update user set password=password('123456') where user='root'"
 	service httpd restart
+	echo 'mysql -uroot mysql -e "update user set password=password('123456') where user='root'"'
 else 
 	echo "Not root privileges or centos7,the script will exit!"
 	exit 1
