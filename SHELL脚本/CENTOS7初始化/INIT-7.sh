@@ -14,7 +14,7 @@ function init(){
 	yum clean all && yum makecache
 	###############################
 	yum -y update
-	yum -y install vim npdate lrzsz iptables-services iptables unzip lsof net-tools gcc make cmake curl-devel bzip2 bzip2-devel libtool glibc gd gd-devel python-devel
+	yum -y install vim ntpdate lrzsz iptables-services iptables unzip lsof net-tools gcc make cmake curl-devel bzip2 bzip2-devel libtool glibc gd gd-devel python-devel
 	###############################
 	#systemctl start iptables  
 	#systemctl status iptables 
