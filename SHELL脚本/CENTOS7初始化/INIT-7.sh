@@ -25,14 +25,14 @@ function init(){
 
 function limits_config(){ #修改打开的文件数
 	sed -i "/^ulimit -SHn.*/d" /etc/rc.d/rc.local
-	echo "ulimit -SHn 10240" >> /etc/rc.d/rc.local
+	echo "ulimit -SHn 65536" >> /etc/rc.d/rc.local
 	sed -i "/^ulimit -s.*/d" /etc/profile
 	sed -i "/^ulimit -c.*/d" /etc/profile
 	sed -i "/^ulimit -SHn.*/d" /etc/profile
 	cat >> /etc/profile <<-'EOF'
 	ulimit -c unlimited
 	ulimit -s unlimited
-	ulimit -SHn 10240
+	ulimit -SHn 65536
 	EOF
 	source /etc/profile
 	ulimit -a
@@ -43,12 +43,12 @@ function limits_config(){ #修改打开的文件数
 	fi
 
 	cat > /etc/security/limits.conf <<-'EOF'
-	* soft nofile 10240
-	* hard nofile 10240
-	* soft nproc  10240
-	* hard nproc  10240
-	hive   - nofile 10240
-	hive   - nproc  10240
+	* soft nofile 65536
+	* hard nofile 65536
+	* soft nproc  65536
+	* hard nproc  65536
+	hive   - nofile 65536
+	hive   - nproc  65536
 	EOF
 
 	if [ ! -f "/etc/security/limits.d/20-nproc.conf.bak" ]; then
@@ -56,7 +56,7 @@ function limits_config(){ #修改打开的文件数
 	fi
 
 	cat > /etc/security/limits.d/20-nproc.conf <<-'EOF'
-	*          soft    nproc     409600
+	*          soft    nproc     65536
 	root       soft    nproc     unlimited
 	EOF
 	sleep 1
