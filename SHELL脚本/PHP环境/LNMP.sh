@@ -80,7 +80,7 @@ function NGINX-INSTALL(){
             }
         }
     }
-    EOF
+EOF
     chown www.www /usr/local/nginx/conf/nginx.conf && echo "/usr/local/nginx/sbin/nginx" >> /etc/rc.d/rc.local
     rm -rf /usr/local/nginx/html/index.html
     echo "<?php phpinfo();?>" > /usr/local/nginx/html/index.php
