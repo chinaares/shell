@@ -146,7 +146,7 @@ if [ -f /etc/redhat-release ] && [ -n "`grep ' 7\.' /etc/redhat-release`" ] && [
 	sleep 5
 	init
 	sleep 5
-	time_set
+	#time_set
 	limits_config
 	sleep 5
 	selinux_config
