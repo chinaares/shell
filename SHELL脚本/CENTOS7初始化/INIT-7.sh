@@ -72,15 +72,12 @@ function ipv6_config(){ # 关闭ipv6  disable the ipv6
 	echo "NETWORKING_IPV6=no">/etc/sysconfig/network
 	echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
 	echo 1 > /proc/sys/net/ipv6/conf/default/disable_ipv6
-	echo "127.0.0.1   localhost   localhost.localdomain" > /etc/hosts
-	#sed -i 's/IPV6INIT=yes/IPV6INIT=no/g' /etc/sysconfig/network-scripts/ifcfg-enp0s8
-	for line in $(ls -lh /etc/sysconfig/network-scripts/ifcfg-* | awk '{print $9}')  
-	do
-		if [ -f  $line ];then
-	        sed -i 's/IPV6INIT=yes/IPV6INIT=no/g' $line
-	        #echo $i
-		fi
-	done
+	# 禁用整个系统所有接口的IPv6
+	echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
+	sysctl –p /etc/sysctl.conf 
+	# 禁用某一个指定接口的IPv6(例如：eth0, lo)
+	# net.ipv6.conf.lo.disable_ipv6 = 1
+	# net.ipv6.conf.eth0.disable_ipv6 = 1
 }
 
 function time_set(){ #设置时间同步
