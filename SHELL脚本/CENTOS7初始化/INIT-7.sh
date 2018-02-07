@@ -69,7 +69,7 @@ function selinux_config(){ #关闭SELINUX disable selinux
 }
 
 function ipv6_config(){ # 关闭ipv6  disable the ipv6
-	echo "NETWORKING_IPV6=no">/etc/sysconfig/network
+	#echo "NETWORKING_IPV6=no">/etc/sysconfig/network
 	echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
 	echo 1 > /proc/sys/net/ipv6/conf/default/disable_ipv6
 	# 禁用整个系统所有接口的IPv6
